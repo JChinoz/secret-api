@@ -7,7 +7,7 @@ services:
             - "3306:3306"
         environment: 
             MYSQL_DATABASE: 'secret-api'
-            MYSQL_ROOT_PASSWORD: 'K44eW%k$53!J6^'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
     app:
         build:
             context: .
