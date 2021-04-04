@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+    db:
+        image: mysql:5.7
+        restart: always
+        ports:
+            - "3306:3306"
+        environment: 
+            MYSQL_DATABASE: 'secret-api'
+            MYSQL_ROOT_PASSWORD: 'K44eW%k$53!J6^'
+    app:
+        build:
+            context: .
+            dockerfile: .docker/Dockerfile
+        image: 'secret-api'
+        ports:
+            - "80:80"
+        volumes:
+            - ./:/var/www/html
