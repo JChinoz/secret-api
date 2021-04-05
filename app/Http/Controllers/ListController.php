@@ -30,9 +30,9 @@ class ListController extends Controller
         }
 
         if(count($data) > 0){
-            return response()->json(['status' => 200, 'mesage' => 'Data retrieval successful', 'results' => $data]);
+            return response()->json(['status' => 'error', 'mesage' => 'Data retrieval successful', 'results' => $data], 200);
         } else {
-            return response()->json(['status' => 200, 'mesage' => 'No data found with given key : ' . $key, 'results' => '']);
+            return response()->json(['status' => 'error', 'mesage' => 'No data found with given key : ' . $key, 'results' => ''], 200);
         }
     }
 
@@ -66,16 +66,16 @@ class ListController extends Controller
                         $updateKeyValue->update(['value' => $value]);
                     } else {
                         DB::rollback();
-                        return response()->json(['status' => 500, 'message' => $e->errorInfo[2]], 500);
+                        return response()->json(['status' => 'error', 'message' => $e->errorInfo[2]], 500);
                     }
                 }
             }
             DB::commit();
-            return response()->json(['status' => 200, 'message' => 'Data successfully added/updated'], 200);
+            return response()->json(['status' => 'success', 'message' => 'Data successfully added/updated'], 201);
         }
         catch(Exception $e){
             DB::rollback();
-            return response()->json(['status' => 500, 'message' => 'Failed to save to database. Transaction rolled back.'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Failed to save to database. Transaction rolled back.'], 500);
         }
     } 
 
@@ -89,9 +89,9 @@ class ListController extends Controller
         }
 
         if(count($data) > 0){
-            return response()->json(['status' => 200, 'mesage' => 'Returning all data...', 'results' => $data]);
+            return response()->json(['status' => 'error', 'mesage' => 'Returning all data...', 'results' => $data], 200);
         } else {
-            return response()->json(['status' => 200, 'mesage' => 'No data found in table', 'results' => '']);
+            return response()->json(['status' => 'error', 'mesage' => 'No data found in table', 'results' => ''], 200);
         }
     }
 }
