@@ -24,6 +24,11 @@ class ListController extends Controller
             $data =  KeyValue_Audit::where('key',$key)->where('updated_at', gmdate("Y-m-d H:i:s", $timestamp))->get();
         }
 
+        foreach($data as $value){
+            $value->created_at = $value->created_at->setTimezone('Asia/Singapore');
+            $value->updated_at = $value->updated_at->setTimezone('Asia/Singapore');
+        }
+
         if(count($data) > 0){
             return response()->json(['status' => 200, 'mesage' => 'Data retrieval successful', 'results' => $data]);
         } else {
