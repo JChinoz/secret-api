@@ -30,9 +30,9 @@ class ListController extends Controller
         }
 
         if(count($data) > 0){
-            return response()->json(['status' => 'error', 'mesage' => 'Data retrieval successful', 'results' => $data], 200);
+            return response()->json(['status' => 'success', 'mesage' => 'Data retrieval successful', 'results' => $data], 200);
         } else {
-            return response()->json(['status' => 'error', 'mesage' => 'No data found with given key : ' . $key, 'results' => ''], 200);
+            return response()->json(['status' => 'success', 'mesage' => 'No data found with given key : ' . $key, 'results' => ''], 200);
         }
     }
 
