@@ -87,11 +87,6 @@ class ListController extends Controller
             $value->created_at = $value->created_at->setTimeZone('Asia/Singapore');
             $value->updated_at = $value->updated_at->setTimeZone('Asia/Singapore');
         }
-
-        if(count($data) > 0){
-            return response()->json(['status' => 'error', 'mesage' => 'Returning all data...', 'results' => $data], 200);
-        } else {
-            return response()->json(['status' => 'error', 'mesage' => 'No data found in table', 'results' => ''], 200);
-        }
+        return response()->json($data, 200);
     }
 }
