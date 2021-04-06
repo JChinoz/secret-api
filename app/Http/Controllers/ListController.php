@@ -21,8 +21,8 @@ class ListController extends Controller
         if($timestamp == null){
             $data =  KeyValue::where('key', $key)->get();
         } else { 
-            $date = gmdate("Y-m-d H:i:s", $timestamp)->setTimeZone('Asia/Singapore');
-            $data =  KeyValue_Audit::where('key',$key)->where('updated_at', $date)->get();
+            $date = gmdate("Y-m-d H:i:s", $timestamp);
+            $data =  KeyValue_Audit::where('key',$key)->where('updated_at', to_date($date)->setTimeZone('Asia/Singapore'))->get();
         }
 
         foreach($data as $value){
