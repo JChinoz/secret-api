@@ -16,6 +16,11 @@ class ListController extends Controller
      */
     public function retrieve(Request $request, $key)
     {
+        $key = preg_replace('/\s+/', '', $key);
+        if(empty($key)){
+            return response()->json(['status' => 'error', 'mesage' => 'Empty key is not allowed'], 400);
+        }
+
         $timestamp = $request->get('timestamp');
         
         if($timestamp == null){
@@ -48,6 +53,12 @@ class ListController extends Controller
         DB::beginTransaction();
         try{
             foreach($data as $key=>$value){
+                $key = preg_replace('/\s+/', '', $key);
+                if(empty($key)){
+                    DB::rollback();
+                    return response()->json(['status' => 'error', 'mesage' => 'Empty key is not allowed'], 400);
+                }
+                
                 $keyValuePair = new KeyValue;
                 $keyValuePair->key = $key;
                 $keyValuePair->value = $value;
@@ -87,6 +98,6 @@ class ListController extends Controller
             $value->created_at = $value->created_at->setTimeZone('Asia/Singapore');
             $value->updated_at = $value->updated_at->setTimeZone('Asia/Singapore');
         }
-        return response()->json($data, 200);
+        return response()->json(['status' => 'success', 'mesage' => 'Data retrieval successful', 'results' => $data], 200);
     }
 }
