@@ -31,7 +31,7 @@ jobs:
         ALLOW_EMPTY_PASSWORD: yes
       run: |
         sudo /etc/init.d/mysql start
-        mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} --password=''
+        mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }}
         mysql -e 'EXIT;'
         php artisan migrate
         vendor/bin/phpunit
