@@ -22,7 +22,7 @@ class ListController extends Controller
         }
 
         $timestamp = $request->get('timestamp');
-        
+
         if($timestamp == null){
             $data =  KeyValue::where('key', $key)->get();
         } else { 
@@ -50,42 +50,41 @@ class ListController extends Controller
     public function store(Request $request)
     {
         $data = request()->json()->all();
-        DB::beginTransaction();
-        try{
-            foreach($data as $key=>$value){
-                $key = preg_replace('/\s+/', '', $key);
-                if(empty($key)){
-                    DB::rollback();
-                    return response()->json(['status' => 'error', 'mesage' => 'Empty key is not allowed'], 400);
-                }
-                
-                $keyValuePair = new KeyValue;
-                $keyValuePair->key = $key;
-                $keyValuePair->value = $value;
-                try{
-                    $keyValuePair->save();    
-                } catch (\Illuminate\Database\QueryException $e) {
-                    // Duplicate found
-                    if($e->errorInfo[1] == '1062'){
-                        $updateKeyValue = KeyValue::where('key', $key);
-                        
-                        $insertAudit = new KeyValue_Audit;
-                        $insertAudit->key = $key;
-                        $insertAudit->value = $updateKeyValue->first()->value;
-                        $insertAudit->save();
-                        // Update new values
-                        $updateKeyValue->update(['value' => $value]);
-                    } else {
-                        DB::rollback();
-                        return response()->json(['status' => 'error', 'message' => $e->errorInfo[2]], 500);
+        if(!empty($data)){
+            try{
+                foreach($data as $key=>$value){
+                    $key = preg_replace('/\s+/', '', $key);
+                    if(empty($key)){
+                        return response()->json(['status' => 'error', 'mesage' => 'Empty key is not allowed'], 400);
+                    }
+                    
+                    $keyValuePair = new KeyValue;
+                    $keyValuePair->key = $key;
+                    $keyValuePair->value = $value;
+                    try{
+                        $keyValuePair->save();
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        // Duplicate found
+                        if($e->errorInfo[1] == '1062'){
+                            $updateKeyValue = KeyValue::where('key', $key);
+                            
+                            $insertAudit = new KeyValue_Audit;
+                            $insertAudit->key = $key;
+                            $insertAudit->value = $updateKeyValue->first()->value;
+                            $insertAudit->save();
+                            // Update new values
+                            $updateKeyValue->update(['value' => $value]);
+                        } else {
+                            return response()->json(['status' => 'error', 'message' => $e->errorInfo[2]], 500);
+                        }
                     }
                 }
+                return response()->json(['status' => 'success', 'message' => 'Data successfully added/updated', "timestamp" => $keyValuePair->updated_at,"timestampEpoch" => strtotime($keyValuePair->updated_at)], 201);
             }
-            DB::commit();
-            return response()->json(['status' => 'success', 'message' => 'Data successfully added/updated'], 201);
-        }
-        catch(Exception $e){
-            DB::rollback();
+            catch(Exception $e){
+                return response()->json(['status' => 'error', 'message' => 'Failed to save to database. Transaction rolled back.'], 500);
+            }
+        } else {
             return response()->json(['status' => 'error', 'message' => 'Failed to save to database. Transaction rolled back.'], 500);
         }
     } 
